@@ -7,7 +7,7 @@ setting up a right version of Android is the key to successful build the android
 I chose m_mr2 for my Nexus 5 with no paticular reason :) and `MOB31E` seems right choice which I can see rigth version information as follows on google groups:
 
 **Android version**
-Build  Branch  Version Supported devices
+Build  Branch  Version Supported devices  
 MOB31E, **android-6.0.1_r66**, Nexus 5, Nexus 6, Nexus 9 (volantisg)
 
 **Kernel version**
