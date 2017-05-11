@@ -1,0 +1,81 @@
+diff --git a/BoardConfig.mk b/BoardConfig.mk
+index 2004604..bb2455d 100644
+--- a/BoardConfig.mk
++++ b/BoardConfig.mk
+@@ -20,12 +20,14 @@ TARGET_ARCH := arm
+ TARGET_ARCH_VARIANT := armv7-a-neon
+ TARGET_CPU_VARIANT := krait
+ 
++TARGET_NO_KERNEL := false
++
+ TARGET_NO_BOOTLOADER := true
+ 
+ BOARD_KERNEL_BASE := 0x00000000
+ BOARD_KERNEL_PAGESIZE := 2048
+ 
+-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=hammerhead user_debug=31 maxcpus=2 msm_watchdog_v2.enable=1
++BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=hammerhead user_debug=31 maxcpus=2 msm_watchdog_v2.enable=1 androidboot.selinux=permissive
+ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02900000 --tags_offset 0x02700000
+ 
+ # Shader cache config options
+diff --git a/device.mk b/device.mk
+index 85df95a..f9e759e 100644
+--- a/device.mk
++++ b/device.mk
+@@ -20,25 +20,25 @@
+ # Everything in this directory will become public
+ 
+ 
+-ifeq ($(TARGET_PREBUILT_KERNEL),)
+-ifeq ($(USE_SVELTE_KERNEL),true)
+-LOCAL_KERNEL := device/lge/hammerhead_svelte-kernel/zImage-dtb
+-else
+-
+-ifneq ($(filter hammerhead_fp aosp_hammerhead_fp,$(TARGET_PRODUCT)),)
+-LOCAL_KERNEL := device/lge/hammerhead_fp-kernel/zImage-dtb
+-else
+-LOCAL_KERNEL := device/lge/hammerhead-kernel/zImage-dtb
+-endif
+-
+-endif
+-else
+-LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+-endif
++#ifeq ($(TARGET_PREBUILT_KERNEL),)
++#ifeq ($(USE_SVELTE_KERNEL),true)
++#LOCAL_KERNEL := device/lge/hammerhead_svelte-kernel/zImage-dtb
++#else
++#
++#ifneq ($(filter hammerhead_fp aosp_hammerhead_fp,$(TARGET_PRODUCT)),)
++#LOCAL_KERNEL := device/lge/hammerhead_fp-kernel/zImage-dtb
++#else
++#LOCAL_KERNEL := device/lge/hammerhead-kernel/zImage-dtb
++#endif
++#
++#endif
++#else
++#LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
++#endif
+ 
+ 
+-PRODUCT_COPY_FILES := \
+-    $(LOCAL_KERNEL):kernel
++#PRODUCT_COPY_FILES := \
++#    $(LOCAL_KERNEL):kernel
+ 
+ PRODUCT_COPY_FILES += \
+     device/lge/hammerhead/init.hammerhead.rc:root/init.hammerhead.rc \
+diff --git a/AndroidBoard.mk b/AndroidBoard.mk
+new file mode 100644
+index 0000000..b1e9422
+--- /dev/null
++++ b/AndroidBoard.mk
+@@ -0,0 +1,8 @@
++KERNEL_DEFCONFIG := hammerhead_defconfig
++KERNEL_DIR := kernel-3.4
++
++-include $(TOP)/$(KERNEL_DIR)/AndroidKernel.mk
++
++.PHONY: $(PRODUCT_OUT)/kernel
++$(PRODUCT_OUT)/kernel: $(TARGET_PREBUILT_KERNEL)
++	cp $(TARGET_PREBUILT_KERNEL) $(PRODUCT_OUT)/kernel

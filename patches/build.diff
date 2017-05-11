@@ -1,0 +1,43 @@
+diff --git a/core/Makefile b/core/Makefile
+index 07d1c94..76553f4 100644
+--- a/core/Makefile
++++ b/core/Makefile
+@@ -469,6 +469,8 @@ ramdisk-nodeps: $(MKBOOTFS) | $(MINIGZIP)
+ 	@echo "make $@: ignoring dependencies"
+ 	$(hide) $(MKBOOTFS) -d $(TARGET_OUT) $(TARGET_ROOT_OUT) | $(MINIGZIP) > $(INSTALLED_RAMDISK_TARGET)
+ 
++$(warning travis TARGET_NO_KERNEL=$(TARGET_NO_KERNEL))
++
+ ifneq ($(strip $(TARGET_NO_KERNEL)),true)
+ 
+ # -----------------------------------------------------------------
+diff --git a/core/clang/HOST_x86_common.mk b/core/clang/HOST_x86_common.mk
+index 74b5a69..d151e99 100644
+--- a/core/clang/HOST_x86_common.mk
++++ b/core/clang/HOST_x86_common.mk
+@@ -11,7 +11,8 @@ endif
+ ifeq ($(HOST_OS),linux)
+ CLANG_CONFIG_x86_LINUX_HOST_EXTRA_ASFLAGS := \
+   --gcc-toolchain=$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG) \
+-  --sysroot=$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG)/sysroot
++  --sysroot=$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG)/sysroot \
++  -B$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG)/x86_64-linux/bin
+ 
+ CLANG_CONFIG_x86_LINUX_HOST_EXTRA_CFLAGS := \
+   --gcc-toolchain=$($(clang_2nd_arch_prefix)HOST_TOOLCHAIN_FOR_CLANG)
+diff --git a/envsetup.sh b/envsetup.sh
+index 6ad3a9e..25d4182 100644
+--- a/envsetup.sh
++++ b/envsetup.sh
+@@ -168,6 +168,11 @@ function setpaths()
+             if [ -d "$gccprebuiltdir/$toolchaindir" ]; then
+                  export ARM_EABI_TOOLCHAIN="$gccprebuiltdir/$toolchaindir"
+                  ANDROID_KERNEL_TOOLCHAIN_PATH="$ARM_EABI_TOOLCHAIN":
++	    else
++		# rookiecj fallback
++            	toolchaindir=arm/arm-eabi-4.8/bin
++                 export ARM_EABI_TOOLCHAIN="$gccprebuiltdir/$toolchaindir"
++                 ANDROID_KERNEL_TOOLCHAIN_PATH="$ARM_EABI_TOOLCHAIN":
+             fi
+             ;;
+         *)
