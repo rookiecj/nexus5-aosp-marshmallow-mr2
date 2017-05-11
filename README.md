@@ -64,3 +64,6 @@ Now you are ready to build, I know you know how to build :)
 
 ## Flashing
 TBD
+
+# Special Thanks
+Thank you Eunjung for your help :)
